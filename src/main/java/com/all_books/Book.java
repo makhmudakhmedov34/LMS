@@ -1,5 +1,8 @@
 package com.all_books;
 
+import lombok.Data;
+
+@Data
 public class Book {
 
     private String id;
