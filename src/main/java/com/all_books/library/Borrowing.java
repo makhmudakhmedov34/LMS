@@ -61,6 +61,10 @@ public class Borrowing {
         return "Borrowing time: "+start+"\nExpire date: "+finish+"\nDays left: "+daysleft;
     }
 
+    public String toString2(){
+        return getStart()+"<N/>"+getFinish()+"<N/>"+getDaysLeft()+"<N/>"+book.getName()+"<N/>"+user.getName()+"<N/>";
+    }
+
 
 
 }

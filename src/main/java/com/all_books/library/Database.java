@@ -1,6 +1,8 @@
 package com.all_books.library;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Database {
@@ -10,10 +12,12 @@ public class Database {
     ArrayList<Book> books = new ArrayList<>();
     ArrayList<String> booknames = new ArrayList<>();
     ArrayList<Order> orders = new ArrayList<>();
+    ArrayList<Borrowing> borrowings = new ArrayList<>();
 
     private File usersfile = new File("src/main/resources/Users");
     private File booksfile = new File("src/main/resources/Books");
     private File ordersfile = new File("src/main/resources/Orders");
+    private File borrowingsfile = new File("src/main/resources/Borrowings");
     private File folder = new File("src/main/resources/");
 
     public Database(){
@@ -37,9 +41,16 @@ public class Database {
                 ordersfile.createNewFile();
             } catch (IOException e) {}
         }
+
+        if(!borrowingsfile.exists()){
+            try {
+                borrowingsfile.createNewFile();
+            } catch (IOException e) {}
+        }
         getUsers();
         getBooks();
         getOrders();
+        getBorrowings();
     }
 
     public void addUser(User user) {
@@ -200,6 +211,12 @@ public class Database {
                 ordersfile.delete();
             } catch (Exception e) {}
         }
+
+        if(borrowingsfile.exists()) {
+            try {
+                borrowingsfile.delete();
+            } catch (Exception e) {}
+        }
 }
 
     public void addOrder(Order order,Book book,int bookindex) {
@@ -213,7 +230,7 @@ public class Database {
             String text1 = "";
             for (Order order : orders) {
                 text1 = text1 + order.toString2() + "<NewOrder/>\n";
-                System.out.println("New Order created "+order.toString2());
+                //System.out.println("New Order created "+order.toString2());
             }
             try {
                 PrintWriter pw = new PrintWriter(ordersfile);
@@ -268,6 +285,63 @@ public class Database {
 
     public ArrayList<Order> getAllOrders(){
         return orders;
+    }
+
+    public void saveBorrowings(){
+        String text1 = "";
+        for (Borrowing borrow : borrowings) {
+            text1 = text1 + borrow.toString2() + "<NewBorrowing/>\n";
+        }
+        try {
+            PrintWriter pw = new PrintWriter(ordersfile);
+            pw.print(text1);
+            pw.close();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+    }
+
+    private void getBorrowings(){
+        String text1 = "";
+        try {
+            BufferedReader br1 = new BufferedReader(new FileReader(borrowingsfile));
+            String s1;
+            while ((s1 = br1.readLine()) != null) {
+                text1 = text1 + s1;
+            }
+            br1.close();
+        }catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        if (!text1.matches("") || !text1.isEmpty()) {
+            String[] a1 = text1.split("<NewBorrowing/>");
+            for (String s : a1) {
+                Borrowing borrowing = parseBorrowing(s);
+                borrowings.add(borrowing);
+            }
+        }
+    }
+
+    private Borrowing parseBorrowing(String s) {
+        String[] a = s.split("<N/>");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate start = LocalDate.parse(a[0], formatter);
+        LocalDate finish = LocalDate.parse(a[1], formatter);
+        Book book = getBook(getBook(a[3]));
+        User user = getUserByName(a[4]);
+        Borrowing brw = new Borrowing(start, finish, book, user);
+        return brw;
+    }
+
+    public void borrowBook(Borrowing brw,Book book,int bookindex){
+        borrowings.add(brw);
+        books.set(bookindex,book);
+        saveBorrowings();
+        saveBooks();
+    }
+
+    public ArrayList<Borrowing> getBrws(){
+        return borrowings;
     }
 }
 
