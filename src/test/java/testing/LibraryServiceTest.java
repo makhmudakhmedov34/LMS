@@ -1,56 +1,158 @@
 package testing;
 
-import com.all_books.LibraryService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.all_books.library.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.File;
+import java.time.LocalDate;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class LibraryServiceTest {
+class DatabaseTest {
+    public static Database db;
+    private static final String TEST_BOOK_NAME = "Test Book";
 
-//    private LibraryService libraryService;
-//
-//    @BeforeEach
-//    void setUp() {
-//        libraryService = new LibraryService();
-//    }
-//
-//    @Test
-//    void testAddBook() {
-//        int initialSize = libraryService.getBooks().size();
-//        libraryService.addBook("Test Book", "Test Author", "12345", 5);
-//        assertEquals(initialSize + 1, libraryService.getBooks().size());
-//    }
-//
-//    @Test
-//    void testAddUser() {
-//        int initialSize = libraryService.getUsers().size();
-//        libraryService.addUser("Test User", "test@example.com", "67890");
-//        assertEquals(initialSize + 1, libraryService.getUsers().size());
-//    }
-//
-//    @Test
-//    void testIssueBook() {
-//        libraryService.addBook("Test Book", "Test Author", "12345", 5);
-//        libraryService.addUser("Test User", "test@example.com", "67890");
-//
-//        String bookId = libraryService.getBooks().get(0).getId();
-//        String userId = libraryService.getUsers().get(0).getId();
-//
-//        libraryService.issueBook(userId, bookId);
-//        assertEquals(4, libraryService.getBooks().get(0).getQuantity());
-//    }
-//
-//    @Test
-//    void testReturnBook() {
-//        libraryService.addBook("Test Book", "Test Author", "12345", 5);
-//        libraryService.addUser("Test User", "test@example.com", "67890");
-//
-//        String bookId = libraryService.getBooks().get(0).getId();
-//        String userId = libraryService.getUsers().get(0).getId();
-//
-//        libraryService.issueBook(userId, bookId);
-//        libraryService.returnBook(userId, bookId);
-//        assertEquals(5, libraryService.getBooks().get(0).getQuantity());
-//    }getQuantity
+    @TempDir
+    File tempDir;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // Redirect file paths to temporary directory
+        System.setProperty("user.dir", tempDir.getAbsolutePath());
+        db = new Database();
+    }
+
+    @AfterEach
+    void tearDown() {
+        db.deleteAllData();
+    }
+
+    @Nested
+    class InitializationTests {
+        @Test
+        void testDatabaseInitializationCreatesFiles() {
+            assertTrue(new File("src/main/resources/Users").exists());
+            assertTrue(new File("src/main/resources/Books").exists());
+            assertTrue(new File("src/main/resources/Orders").exists());
+            assertTrue(new File("src/main/resources/Borrowings").exists());
+        }
+    }
+
+    @Nested
+    class UserTests {
+        @Test
+        void testAddUser() {
+            User user = new NormalUser("John", "123", "john@test.com");
+            db.addUser(user);
+
+            assertEquals(1, db.getAllUsers().size());
+            assertTrue(db.getAllUsers().contains("John"));
+        }
+
+        @Test
+        void testLoginSuccess() {
+            User user = new NormalUser("John", "123", "john@test.com");
+            db.addUser(user);
+
+            int result = db.login("123", "john@test.com");
+            assertEquals(0, result);
+        }
+
+        @Test
+        void testLoginFailure() {
+            assertEquals(-1, db.login("invalid", "credentials"));
+        }
+    }
+
+    @Nested
+    class BookTests {
+        @Test
+        void testAddBook() {
+            Book book = createTestBook();
+            db.addBook(book);
+
+            assertEquals(1, db.getAllBooks().size());
+            assertEquals(TEST_BOOK_NAME, db.getAllBooks().get(0));
+        }
+
+        @Test
+        void testDeleteBook() {
+            Book book = createTestBook();
+            db.addBook(book);
+            db.deleteBook(0);
+
+            assertEquals(0, db.getAllBooks().size());
+        }
+
+        @Test
+        void testGetBook() {
+            Book book = createTestBook();
+            db.addBook(book);
+
+            int index = db.getBook(TEST_BOOK_NAME);
+            assertEquals(0, index);
+            assertEquals(TEST_BOOK_NAME, db.getBook(index).getName());
+        }
+    }
+
+    @Nested
+    class DataPersistenceTests {
+        @Test
+        void testSaveAndLoadUsers() {
+            User user = new NormalUser("John", "123", "john@test.com");
+            db.addUser(user);
+
+            Database newDb = new Database();
+            assertEquals(1, newDb.getAllUsers().size());
+        }
+
+        @Test
+        void testDeleteAllData() {
+            db.deleteAllData();
+            assertFalse(new File("src/main/resources/Users").exists());
+            assertFalse(new File("src/main/resources/Books").exists());
+        }
+    }
+
+    @Nested
+    class OrderTests {
+        @Test
+        void testAddOrder() {
+            Book book = createTestBook();
+            db.addBook(book);
+            User user = new NormalUser("John", "123", "john@test.com");
+            //Order order = new Order(book, user, 29.99, 1);
+
+            //db.addOrder(order, book, 0);
+            assertEquals(1, db.getAllOrders().size());
+        }
+    }
+
+    @Nested
+    class BorrowingTests {
+        @Test
+        void testBorrowBook() {
+            Book book = createTestBook();
+            db.addBook(book);
+            User user = new NormalUser("John", "123", "john@test.com");
+            Borrowing borrowing = new Borrowing(
+                    LocalDate.now(),
+                    LocalDate.now().plusDays(14),
+                    book,
+                    user
+            );
+
+            db.borrowBook(borrowing, book, 0);
+            assertEquals(1, db.getAllBorrowings().size());
+        }
+    }
+
+    private Book createTestBook() {
+        Book book = new Book();
+        book.setName(TEST_BOOK_NAME);
+        book.setAuthor("Test Author");
+        book.setQty(5);
+        return book;
+    }
 }

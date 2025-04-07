@@ -4,6 +4,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
 
@@ -80,6 +81,10 @@ public class Database {
         saveBooks();
     }
 
+    public List<String> getAllBookNames(){
+        return getAllBookNames();
+    }
+
     private void getUsers() {
         String text1 = "";
         try {
@@ -121,6 +126,10 @@ public class Database {
         } catch (Exception e) {
             System.err.println(e.toString());
         }
+    }
+
+    public List<User> getAllUsers(){
+        return users;
     }
 
     private void saveBooks() {
@@ -331,6 +340,10 @@ public class Database {
         User user = getUserByName(a[4]);
         Borrowing brw = new Borrowing(start, finish, book, user);
         return brw;
+    }
+
+    public List<Borrowing> getAllBorrowings(){
+        return borrowings;
     }
 
     public void borrowBook(Borrowing brw,Book book,int bookindex){
