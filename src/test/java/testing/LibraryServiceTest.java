@@ -122,9 +122,9 @@ class DatabaseTest {
             Book book = createTestBook();
             db.addBook(book);
             User user = new NormalUser("John", "123", "john@test.com");
-            //Order order = new Order(book, user, 29.99, 1);
+            Order order = new Order(book, user, 29.99, 1);
 
-            //db.addOrder(order, book, 0);
+            db.addOrder(order, book, 0);
             assertEquals(1, db.getAllOrders().size());
         }
     }
@@ -144,7 +144,7 @@ class DatabaseTest {
             );
 
             db.borrowBook(borrowing, book, 0);
-            assertEquals(1, db.getAllBorrowings().size());
+            assertEquals(1, db.getBrws().size());
         }
     }
 

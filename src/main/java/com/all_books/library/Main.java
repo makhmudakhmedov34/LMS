@@ -8,24 +8,20 @@ public class Main {
     static Database database;
 
     public static void main(String[] args) {
+
         database = new Database();
         System.out.println("Welcome to Library Management System!");
-        int num;
-        //do {
 
-            System.out.println("0. Exit\n1. Login\n2. New User");
+        int num;
+        System.out.println("0. Exit\n1. Login\n2. New User");
         s = new Scanner(System.in);
         num = s.nextInt();
-
         switch (num) {
             case 1:
-                login();
-                break;
+                login();break;
             case 2:
-                newuser();
-                break;
+                newuser();break;
         }
-    //}while (num != 0);
 }
 
     private static void login() {

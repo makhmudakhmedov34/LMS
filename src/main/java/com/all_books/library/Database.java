@@ -302,7 +302,7 @@ public class Database {
             text1 = text1 + borrow.toString2() + "<NewBorrowing/>\n";
         }
         try {
-            PrintWriter pw = new PrintWriter(ordersfile);
+            PrintWriter pw = new PrintWriter(borrowingsfile);
             pw.print(text1);
             pw.close();
         } catch (Exception e) {
@@ -342,10 +342,6 @@ public class Database {
         return brw;
     }
 
-    public List<Borrowing> getAllBorrowings(){
-        return borrowings;
-    }
-
     public void borrowBook(Borrowing brw,Book book,int bookindex){
         borrowings.add(brw);
         books.set(bookindex,book);
@@ -355,6 +351,13 @@ public class Database {
 
     public ArrayList<Borrowing> getBrws(){
         return borrowings;
+    }
+
+    public void returnBook(Borrowing b,Book book,int bookindex){
+        borrowings.remove(b);
+        books.set(bookindex,book);
+        saveBorrowings();
+        saveBooks();
     }
 }
 
