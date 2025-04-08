@@ -1,8 +1,8 @@
 package testing;
 
 import com.all_books.library.*;
+import com.all_books.library.Order;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
@@ -47,12 +47,12 @@ class DatabaseTest {
             db.addUser(user);
 
             assertEquals(1, db.getAllUsers().size());
-            assertTrue(db.getAllUsers().contains("John"));
+            assertTrue(db.getAllUsers().stream().anyMatch(n ->n.getName().equals("John")));
         }
 
         @Test
         void testLoginSuccess() {
-            User user = new NormalUser("John", "123", "john@test.com");
+            User user = new NormalUser("John", "john@test.com", "123");
             db.addUser(user);
 
             int result = db.login("123", "john@test.com");
@@ -73,7 +73,7 @@ class DatabaseTest {
             db.addBook(book);
 
             assertEquals(1, db.getAllBooks().size());
-            assertEquals(TEST_BOOK_NAME, db.getAllBooks().get(0));
+            assertEquals(TEST_BOOK_NAME, db.getAllBooks().get(0).getName());
         }
 
         @Test
@@ -122,7 +122,7 @@ class DatabaseTest {
             Book book = createTestBook();
             db.addBook(book);
             User user = new NormalUser("John", "123", "john@test.com");
-            Order order = new Order(book, user, 29.99, 1);
+            com.all_books.library.Order order = new Order(book, user, 29.99, 1);
 
             db.addOrder(order, book, 0);
             assertEquals(1, db.getAllOrders().size());

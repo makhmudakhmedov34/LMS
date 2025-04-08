@@ -24,7 +24,7 @@ public class Borrowing {
     public Borrowing(LocalDate start, LocalDate finish, Book book, User user) {
         this.start = start;
         this.finish = finish;
-        this.daysleft = Period.between(start, finish).getDays();
+        this.daysleft = Period.between(finish,LocalDate.now()).getDays();
         this.book = book;
         this.user = user;
     }
@@ -38,7 +38,7 @@ public class Borrowing {
     }
 
     public int getDaysLeft() {
-        return Period.between(start, finish).getDays();
+        return Period.between(finish,LocalDate.now()).getDays();
     }
 
     public Book getBook() {
