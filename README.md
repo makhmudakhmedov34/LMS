@@ -1,80 +1,141 @@
-Library Management System (LMS)
+📚 Library Management System
 
-This is a simple Java-based Library Management System (LMS) that allows Admins and Normal Users to interact with a library database via a console menu. The system supports basic operations such as viewing books, placing orders, borrowing and returning books, as well as admin tasks like adding or deleting books.
+A Java-based application for managing library operations including user management, book cataloging, order processing, and borrowing records.
 
-Features:
+🚀 Features
 
-Admin
+🧑‍🤝‍🧑 User Management
+- Create/administer different user types (Admin/Normal)
+- Secure login functionality
+- Persistent user data storage
 
-View Books
-Add Book
-Delete Book
-Search
-Delete All Data
-View Orders
-Exit
+📖 Book Operations
+- Add/remove books from catalog
+- Track book availability
+- Search and retrieve book information
 
-Normal User
+💰 Order Processing
+- Create and manage book orders
+- Track order history
 
-View Books
-Search
-Place Order
-Borrow Book
-Calculate Fine
-Return Book
-Exit
+🔄 Borrowing System
+- Check-out and return books
+- Automatic due date calculation
+- Borrowing history tracking
+
+🛠️ Technical Implementation
+
+🏗️ System Architecture
+
+classDiagram
+class Database{
+-users: List<User>
+-books: List<Book>
+-orders: List<Order>
+-borrowings: List<Borrowing>
++addUser()
++login()
++addBook()
++deleteBook()
+}
+Database --> User
+Database --> Book
+Database --> Order
+Database --> Borrowing
 
 
-Project Structure
-
+📂 File Structure
 src/
-└── main/
-    └── java/
-        └── com/
-            └── all_books/
-                └── library/
-                    ├── AddBook.java
-                    ├── Admin.java
-                    ├── Book.java
-                    ├── BorrowBook.java
-                    ├── Borrowing.java
-                    ├── CalculateFine.java
-                    ├── Database.java
-                    ├── DeleteAllData.java
-                    ├── DeleteBook.java
-                    ├── Exit.java
-                    ├── IOOperation.java
-                    ├── Main.java
-                    ├── NormalUser.java
-                    ├── Order.java
-                    ├── PlaceOrder.java
-                    ├── ReturnBook.java
-                    ├── Search.java
-                    ├── User.java
-                    ├── ViewBooks.java
-                    └── ViewOrders.java
+├── main/
+│ ├── java/com/all_books/library/
+│ │ ├── Database.java # Core data management
+│ │ ├── User.java # User base class
+│ │ ├── Admin.java # Admin implementation
+│ │ ├── NormalUser.java # Regular user
+│ │ ├── Book.java # Book entity
+│ │ ├── Order.java # Order processing
+│ │ └── Borrowing.java # Loan management
+│ └── resources/ # Data storage
+│ ├── Users
+│ ├── Books
+│ ├── Orders
+│ └── Borrowings
 └── test/
-    └── java/
-        └── testing/
-            ├── LibraryServiceTest.java
-            └── DatabaseTest.java
+└── java/com/all_books/library/
+└── DatabaseTest.java # Comprehensive test suite
 
-How to Run
 
-1. Clone the repository (if using Git):
-git clone <repository-url>
+🧪 Testing Framework
 
-2. Open the project in your preferred IDE (e.g., IntelliJ IDEA).
+✅ Verified Functionality
 
-3. Run the application via the Main.java file.
+@Test
+void testCompleteWorkflow() {
 
-4. Navigate menus via numeric input in the console.
+// 1. Initialize fresh database
+Database db = new Database();
+// 2. Add test user
+User user = new NormalUser("John", "123", "john@test.com");
+db.addUser(user);
 
-Requirements
+// 3. Add test book
+Book book = new Book();
+book.setName("Clean Code");
+db.addBook(book);
 
-Java 8 or higher
-IDE (e.g., IntelliJ, Eclipse) or terminal with javac and java
+// 4. Create order
+Order order = new Order(book, user, 29.99, 1);
+db.addOrder(order, book, 0);
 
-Author
+// 5. Verify all operations
+assertEquals(1, db.users.size());
+assertEquals(1, db.books.size());
+assertEquals(1, db.orders.size());
 
-makhmudakhmedov34
+
+📊 Test Coverage
+- Database initialization
+- CRUD operations for all entities
+- File persistence verification
+- Edge case validation
+
+⚙️ Setup Instructions
+
+1. **Requirements**
+   - JDK 17+
+   - Maven 3.8+
+
+2. **Installation**
+
+git clone https://github.com/yourrepo/library-system.git
+cd library-system
+mvn clean install
+
+3. **Running Tests**
+
+mvn test
+
+📝 Usage Examples
+
+**Adding a New Book:**
+Book newBook = new Book();
+newBook.setName("Design Patterns");
+newBook.setAuthor("Gamma et al.");
+newBook.setQty(10);
+database.addBook(newBook);
+
+
+**User Login:**
+int loginStatus = database.login("secure123", "user@email.com");
+if(loginStatus == 0) {
+System.out.println("Login successful!");
+}
+
+
+🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
